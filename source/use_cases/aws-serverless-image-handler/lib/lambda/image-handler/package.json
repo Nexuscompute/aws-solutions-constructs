@@ -9,7 +9,7 @@
   "private": true,
   "dependencies": {
     "sharp": "^0.23.4",
-    "color": "3.1.2",
+    "color": "3.2.1",
     "color-name": "1.1.4"
   },
   "devDependencies": {
