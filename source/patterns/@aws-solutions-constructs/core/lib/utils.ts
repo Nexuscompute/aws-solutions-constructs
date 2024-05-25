@@ -61,9 +61,15 @@ function isPlainObject(o: object) {
 /**
  * @internal This is an internal core function and should not be called directly by Solutions Constructs clients.
  */
-export function overrideProps(DefaultProps: object, userProps: object, concatArray: boolean = false): any {
+export function overrideProps(DefaultProps: object, userProps: object, concatArray: boolean = false, suppressWarnings?: boolean): any {
   // Notify the user via console output if defaults are overridden
-  const overrideWarningsEnabled = (process.env.overrideWarningsEnabled !== 'false');
+
+  let overrideWarningsEnabled: boolean;
+  if ((process.env.overrideWarningsEnabled === 'false') || (suppressWarnings === true)) {
+    overrideWarningsEnabled = false;
+  } else  {
+    overrideWarningsEnabled = true;
+  }
   if (overrideWarningsEnabled) {
     flagOverriddenDefaults(DefaultProps, userProps);
   }
@@ -229,7 +235,8 @@ export function consolidateProps(defaultProps: object, clientProps?: object, con
   }
 
   if (constructProps) {
-    result = overrideProps(result, constructProps, concatArray);
+    // Suppress warnings for construct props overriding everything else
+    result = overrideProps(result, constructProps, concatArray, true);
   }
 
   return result;
@@ -266,4 +273,12 @@ export function CheckListValues(allowedPermissions: string[], submittedValues: s
       throw Error(`Invalid ${valueType} submitted - ${submittedValue}`);
     }
   });
+}
+
+export function CheckBooleanWithDefault(value: boolean | undefined, defaultValue: boolean): boolean {
+  if (value === undefined) {
+    return defaultValue;
+  } else {
+    return value;
+  }
 }

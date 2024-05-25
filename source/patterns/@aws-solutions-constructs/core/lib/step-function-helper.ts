@@ -87,35 +87,14 @@ export function buildStateMachine(scope: Construct, stateMachineProps: sfn.State
   // If the client did not pass a role we got the default role and will trim the privileges
   if (!stateMachineProps.role) {
     const role = newStateMachine.node.findChild('Role') as iam.Role;
-    const cfnDefaultPolicy = role.node.findChild('DefaultPolicy').node.defaultChild as iam.CfnPolicy;
-
-    // Reduce the scope of actions for the existing DefaultPolicy
-    cfnDefaultPolicy.addPropertyOverride('PolicyDocument.Statement.0.Action',
-      [
-        "logs:CreateLogDelivery",
-        'logs:GetLogDelivery',
-        'logs:UpdateLogDelivery',
-        'logs:DeleteLogDelivery',
-        'logs:ListLogDeliveries'
-      ]);
-
+    const cfnDefaultPolicy = role.node.findChild('DefaultPolicy').node.defaultChild as any;
     // Override Cfn Nag warning W12: IAM policy should not allow * resource
     addCfnSuppressRules(cfnDefaultPolicy, [
       {
         id: 'W12',
-        reason: `The 'LogDelivery' actions do not support resource-level authorizations`
+        reason: `These are CDK defaults. The 'LogDelivery' actions do not support resource-level authorizations. Any logging is done by State Machine code`
       }
     ]);
-
-    // Add a new policy with logging permissions for the given cloudwatch log group
-    newStateMachine.addToRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:PutResourcePolicy',
-        'logs:DescribeResourcePolicies',
-        'logs:DescribeLogGroups'
-      ],
-      resources: [`arn:${cdk.Aws.PARTITION}:logs:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:*`]
-    }));
   }
   return { stateMachine: newStateMachine, logGroup };
 }

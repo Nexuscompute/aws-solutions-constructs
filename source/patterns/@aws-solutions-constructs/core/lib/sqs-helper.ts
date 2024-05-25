@@ -103,7 +103,7 @@ export function buildQueue(scope: Construct, id: string, props: BuildQueueProps)
     } else if (props.encryptionKey) {
       queueProps.encryptionMasterKey = props.encryptionKey;
     } else if (props.encryptionKeyProps || props.enableEncryptionWithCustomerManagedKey === true) {
-      queueProps.encryptionMasterKey = buildEncryptionKey(scope, props.encryptionKeyProps);
+      queueProps.encryptionMasterKey = buildEncryptionKey(scope, id, props.encryptionKeyProps);
     }
 
     // NOSONAR (typescript:S6330)
@@ -127,7 +127,7 @@ export function buildQueue(scope: Construct, id: string, props: BuildQueueProps)
  */
 function CheckEncryptionWarnings(props: BuildQueueProps) {
   if ((props.queueProps?.encryptionMasterKey || props.encryptionKey || props.encryptionKeyProps)
-  && props.enableEncryptionWithCustomerManagedKey === true) {
+  && props.enableEncryptionWithCustomerManagedKey !== true) {
     printWarning(`Ignoring enableEncryptionWithCustomerManagedKey because one of
      queueProps.encryptionMasterKey, encryptionKey, or encryptionKeyProps was already specified`);
   }
