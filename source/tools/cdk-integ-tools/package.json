@@ -36,8 +36,8 @@
     "constructs": "^10.0.0"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "2.99.1",
-    "aws-cdk": "2.99.1",
+    "@aws-cdk/cloudformation-diff": "2.147.3",
+    "aws-cdk": "2.147.3",
     "fs-extra": "^9.0.1",
     "yargs": "^16.1.1",
     "deepmerge": "^4.0.0"
